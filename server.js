@@ -15,7 +15,6 @@ app.use(jsonParser)
 app.use(urlencodedParser)
 
 app.post('/api/signup',(req,res) => {
-  // const newUser = 
   console.log(req.body.username)
   const user = new User({
     username: req.body.username,
@@ -37,35 +36,30 @@ app.post('/api/signup',(req,res) => {
 app.post('/api/login',(req,res) => {
   User.findOne({username : req.body.username}, (err,user) => {
     if(err){
-      console.log('one')
       console.log(err)
     }
     if(user && user.password === req.body.password){
-      console.log('two')
-      res.json({'msg' : 'user found'})
+      res.status(200).json({'msg' : 'user found'})
     }else{
-      console.log('three')
-      res.json({'data': 'login invalid'})
+      res.status(400).json({'data': 'login invalid'})
     }
   })
 })
 
-app.get('/api/questionsreal',urlencodedParser, (req,res) => {
-  // const questions = questions;
-
+app.get('/api/questionsreal', (req,res) => {
   res.json(questions)
 })
 
 app.get('/api/users', (req, res) => {
-  const questions = [
-    {id: 1, firstName: 'Aravindhan', lastName: 'Chandrasekaran'},
-    {id: 2, firstName: 'Bradley', lastName: 'Cooper'},
-    {id: 3, firstName: 'Keanu', lastName: 'Reaves'},
-  ];
-
-  res.json(questions);
+  User.find({},(err,result) =>{
+    if(err){
+      res.send(err)
+    }else{
+      res.json(result)
+    }
+  })
 });
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.listen(port);
