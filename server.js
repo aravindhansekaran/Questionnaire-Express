@@ -15,31 +15,39 @@ app.use(jsonParser)
 app.use(urlencodedParser)
 
 app.post('/api/signup',(req,res) => {
-  const newUser = {
-    username : req.body.username,
-    firstname : req.body.firstname,
-    lastname : req.body.lastname,
-    password : req.body.password
-  }
+  // const newUser = 
   console.log(req.body.username)
-  const user = new User(newUser)
-  user.save().then(user => console.log(user)).catch((e) => res.status(400))
-  res.status(200).json({'msg':'success'})
-})
-
-app.get('/api/login',(req,res) => {
-  User.findOne({username : req.body.username}, (err,user) => {
+  const user = new User({
+    username: req.body.username,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+    password: req.body.password
+  })
+  // user.save().then(user => console.log(user)).catch((e) => res.status(400).json({'msg':'failure'}))
+  // res.status(200).json({'msg':'success'})
+  user.save((err,user) => {
     if(err){
-      res.json(err)
-    }
-    if(user && user.password === req.body.password){
-      res.json({'msg' : 'user found'})
+      res.status(400).res.json({ 'msg': 'failure'})
     }else{
-      res.json({data: 'login invalid'})
+      res.status(200).json({ 'msg': 'success'})
     }
   })
+})
 
-  res.json(req.body)
+app.post('/api/login',(req,res) => {
+  User.findOne({username : req.body.username}, (err,user) => {
+    if(err){
+      console.log('one')
+      console.log(err)
+    }
+    if(user && user.password === req.body.password){
+      console.log('two')
+      res.json({'msg' : 'user found'})
+    }else{
+      console.log('three')
+      res.json({'data': 'login invalid'})
+    }
+  })
 })
 
 app.get('/api/questionsreal',urlencodedParser, (req,res) => {
@@ -48,7 +56,7 @@ app.get('/api/questionsreal',urlencodedParser, (req,res) => {
   res.json(questions)
 })
 
-app.get('/api/questions', (req, res) => {
+app.get('/api/users', (req, res) => {
   const questions = [
     {id: 1, firstName: 'Aravindhan', lastName: 'Chandrasekaran'},
     {id: 2, firstName: 'Bradley', lastName: 'Cooper'},
